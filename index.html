@@ -2,18 +2,104 @@
 <html>
 <head>
     <title>TrafficWatchdog Test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    <h1>Testing TrafficWatchdog</h1>
-    <p>This page tests bot detection.</p>
+    <h1>Testing TrafficWatchdog Bot Detection</h1>
+    <p>This page tests bot detection using TrafficWatchdog.</p>
+    <p>Open Developer Tools (F12) and check the Console for data.</p>
     
-    <script type="text/javascript" src="https://trafficscanner.pl/ws2/script/6211/koniec.js"></script>
-    
+    <div id="results">
+        <h2>Detection Results:</h2>
+        <p id="status">Loading...</p>
+        <div id="data"></div>
+    </div>
+
+    <button onclick="checkTrafficWatchdogData()">Check TrafficWatchdog Data</button>
+    <button onclick="simulateConversion()">Simulate Conversion</button>
+
     <script>
-        // Simple way to see if anything gets returned
+        // Function to check for TrafficWatchdog data
+        function checkTrafficWatchdogData() {
+            console.log("=== CHECKING TRAFFICWATCHDOG DATA ===");
+            
+            // Check for common TrafficWatchdog variables
+            const possibleVars = ['trafficwatchdog', 'tw', 'twd', 'scanner', 'botScore'];
+            possibleVars.forEach(varName => {
+                if (window[varName]) {
+                    console.log(varName + ":", window[varName]);
+                }
+            });
+            
+            // Check all window properties for anything traffic-related
+            console.log("Searching for traffic/bot related properties...");
+            Object.keys(window).forEach(key => {
+                if (key.toLowerCase().includes('traffic') || 
+                    key.toLowerCase().includes('bot') || 
+                    key.toLowerCase().includes('twd') ||
+                    key.toLowerCase().includes('scanner')) {
+                    console.log("Found property:", key, window[key]);
+                }
+            });
+            
+            // Check cookies
+            console.log("Cookies:", document.cookie);
+            
+            // Check localStorage
+            console.log("LocalStorage keys:", Object.keys(localStorage));
+            
+            document.getElementById('status').textContent = 'Check complete - see console for details';
+        }
+        
+        // Function to simulate a conversion
+        function simulateConversion() {
+            console.log("Simulating conversion...");
+            // This would typically be called on a purchase confirmation page
+            if (typeof getUserId === 'function') {
+                console.log("User ID:", getUserId());
+            }
+        }
+        
+        // Auto-check after page loads
         setTimeout(function() {
-            console.log("Check browser console for any trafficwatchdog data");
+            console.log("=== AUTO-CHECK AFTER 3 SECONDS ===");
+            checkTrafficWatchdogData();
         }, 3000);
+        
+        // Check again after 10 seconds to see if more data becomes available
+        setTimeout(function() {
+            console.log("=== DELAYED CHECK AFTER 10 SECONDS ===");
+            checkTrafficWatchdogData();
+        }, 10000);
+        
+        // Monitor for any new script tags or network activity
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList') {
+                    mutation.addedNodes.forEach(function(node) {
+                        if (node.tagName === 'SCRIPT') {
+                            console.log("New script added:", node.src || 'inline script');
+                        }
+                    });
+                }
+            });
+        });
+        observer.observe(document, { childList: true, subtree: true });
     </script>
+
+    <!-- Main TrafficWatchdog code - place before </body> -->
+    <script type="text/javascript" src="https://trafficscanner.pl/ws2/script/6236/koniec.js"></script>
+    
+    <!-- Conversion code (optional) -->
+    <script type="text/javascript">
+        var getCookie=function(e){for(var t=e+"=",r=document.cookie.split(";"),n=0;n<r.length;n++){for(var s=r[n];" "==s.charAt(0);)s=s.substring(1);if(0==s.indexOf(t))return s.substring(t.length,s.length)}return""};
+        var getUserId=function(){var e=getCookie("twd_u");return""===e?"":e};
+        var userId=getUserId();
+        var xhr=new XMLHttpRequest;
+        xhr.open("GET","https://trafficscanner.pl/ws2/index.php/?action=noscript&dt=77&cid=6236&user_id="+userId);
+        xhr.send();
+    </script>
+    <script type="text/javascript" src="https://trafficscanner.pl/ws2/script/setSaleCookie.js"></script>
 </body>
 </html>
